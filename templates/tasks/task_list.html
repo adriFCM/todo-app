@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="get" class="toolbar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search title or description…">
+  <select name="status">
+    <option value="all"  {% if status == 'all' %}selected{% endif %}>All</option>
+    <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
+    <option value="done" {% if status == 'done' %}selected{% endif %}>Done</option>
+  </select>
+  <select name="priority">
+    <option value="all" {% if priority == 'all' %}selected{% endif %}>All priorities</option>
+    <option value="LOW" {% if priority == 'LOW' %}selected{% endif %}>Low</option>
+    <option value="MED" {% if priority == 'MED' %}selected{% endif %}>Medium</option>
+    <option value="HIGH" {% if priority == 'HIGH' %}selected{% endif %}>High</option>
+  </select>
+  <select name="sort">
+    <option value="created_at"  {% if sort == 'created_at' %}selected{% endif %}>Newest</option>
+    <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Oldest</option>
+    <option value="due_date"    {% if sort == 'due_date' %}selected{% endif %}>Due date ↑</option>
+    <option value="-due_date"   {% if sort == '-due_date' %}selected{% endif %}>Due date ↓</option>
+    <option value="priority"    {% if sort == 'priority' %}selected{% endif %}>Priority ↑</option>
+    <option value="-priority"   {% if sort == '-priority' %}selected{% endif %}>Priority ↓</option>
+    <option value="completed"   {% if sort == 'completed' %}selected{% endif %}>Status ↑</option>
+    <option value="-completed"  {% if sort == '-completed' %}selected{% endif %}>Status ↓</option>
+    <option value="title"       {% if sort == 'title' %}selected{% endif %}>Title A→Z</option>
+    <option value="-title"      {% if sort == '-title' %}selected{% endif %}>Title Z→A</option>
+  </select>
+  <button type="submit">Apply</button>
+  <a class="btn" href="{% url 'task_create' %}">+ New Task</a>
+</form>
+
+<table class="card-table">
+  <thead><tr><th>Done</th><th>Title</th><th>Priority</th><th>Due</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for t in tasks %}
+    <tr class="{% if t.completed %}done{% endif %}">
+      <td><a class="toggle" href="{% url 'task_toggle' t.pk %}">{% if t.completed %}✅{% else %}⬜{% endif %}</a></td>
+      <td>
+        <div class="title">{{ t.title }}</div>
+        {% if t.description %}<div class="desc">{{ t.description }}</div>{% endif %}
+      </td>
+      <td><span class="pill {{ t.priority|lower }}">{{ t.get_priority_display }}</span></td>
+      <td>{{ t.due_date|default:"—" }}</td>
+      <td class="actions">
+        <a href="{% url 'task_update' t.pk %}">Edit</a>
+        <a class="danger" href="{% url 'task_delete' t.pk %}">Delete</a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">No tasks match your filters. Try clearing them.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
