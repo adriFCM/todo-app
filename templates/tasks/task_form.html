@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ mode }} Task</h2>
+<form method="post" style="background:#fff;padding:16px;border:1px solid #e5e5ea;border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06);">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="primary">{{ mode }}</button>
+  <a href="{% url 'task_list' %}"><button type="button" class="ghost">Cancel</button></a>
+</form>
+{% endblock %}
