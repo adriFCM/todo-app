@@ -35,11 +35,16 @@
   <!-- Right-aligned action buttons -->
   <div style="margin-left:auto; display:flex; gap:8px;">
     <button type="submit" class="btn">Apply</button>
+    <a class="btn" href="{% url 'task_list' %}">Clear filters</a>
     <a class="btn" href="{% url 'task_create' %}" style="text-decoration:none; display:inline-block;">
       + New Task
     </a>
   </div>
 </form>
+
+
+
+
 
 <table class="card-table">
   <thead>
