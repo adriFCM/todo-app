@@ -1,5 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  .btn-purple {
+    background:#a21cd6;   /* purple background */
+    color:#fff;           /* white text */
+    border:1px solid transparent;
+    border-radius:8px;    /* same rounding as your other buttons */
+    padding:6px 14px;     /* same padding as other buttons */
+    font-weight:500;
+    display:inline-block;
+    text-align:center;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+  .btn-purple:hover {
+    background:#6d28d9;   /* darker purple on hover */
+  }
+</style>
 
 <form method="get" class="toolbar"
       style="display:flex; gap:12px; align-items:center; flex-wrap:nowrap;">
@@ -36,14 +53,16 @@
   <div style="margin-left:auto; display:flex; gap:8px;">
     <button type="submit" class="btn">Apply</button>
     <a class="btn" href="{% url 'task_list' %}">Clear filters</a>
-    <a class="btn" href="{% url 'task_create' %}" style="text-decoration:none; display:inline-block;">
-      + New Task
     </a>
   </div>
 </form>
 
-
-
+<div class="divider"></div>
+<div style="display:flex; align-items:center; justify-content:flex-start; margin:10px 0 12px;">
+  <a href="{% url 'task_create' %}" class="btn btn-purple">
+  + New Task
+</a>
+</div>
 
 
 <table class="card-table">
