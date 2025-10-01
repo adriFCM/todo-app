@@ -4,11 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>To-Do List</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
+
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-  <header><h1>To-Do List Manager</h1></header>
-  <main>{% block content %}{% endblock %}</main>
-  <footer><small>Built for DevOps Assignment</small></footer>
+  <header>
+    <h1>To-Do List Manager</h1>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <small>Built for DevOps Assignment</small>
+  </footer>
 </body>
 </html>

@@ -79,13 +79,22 @@
   {% for t in tasks %}
     <tr class="{% if t.completed %}done{% endif %}">
       <td>
-        <a class="toggle" href="{% url 'task_toggle' t.pk %}">
-          {% if t.completed %}✅{% else %}⬜{% endif %}
+        <a class="toggle {% if t.completed %}done{% endif %}"
+        href="{% url 'task_toggle' t.pk %}">
+        {% if t.completed %}
+      ✓
+      {% else %}
+      ○
+      {% endif %}
         </a>
       </td>
+
       <td>
         <div class="title">{{ t.title }}</div>
         {% if t.description %}<div class="desc">{{ t.description }}</div>{% endif %}
+        {% if t.completed %}
+  <span class="badge-completed">Completed</span>
+{% endif %}
       </td>
       <td><span class="pill {{ t.priority|lower }}">{{ t.get_priority_display }}</span></td>
       <td>{{ t.due_date|default:"—" }}</td>
