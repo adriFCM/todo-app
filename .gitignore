@@ -1,9 +1,18 @@
-# Ignore virtual environment
-.venv/
-
-# Ignore local DB file (will appear later)
-db.sqlite3
-
-# Ignore Python cache
+# Python
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 *.pyc
+
+# Virtual env
+.venv/
+venv/
+
+# Django stuff
+db.sqlite3
+*.log
+
+# VSCode / IDE
+.vscode/
+.idea/
