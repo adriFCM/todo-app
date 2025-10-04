@@ -20,7 +20,7 @@ To-Do-List Manager application for students and professionals that helps organiz
 
 ## Getting Started
 - Python 3.10+
-- Optional) requirements.txt ith Django pinned
+- (Optional) requirements.txt with Django pinned
 
 ### Set Up
 
