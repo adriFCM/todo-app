@@ -38,12 +38,14 @@ To-Do-List Manager application for students and professionals that helps organiz
     ```Windows (PowerShell)
     venv\Scripts\Activate
 3. Install packages
+    ```bash
     pip install -r requirements.txt
-4. Initialize the database 
+    ```
+5. Initialize the database 
     ```bash
     python manage.py migrate
     ```
-5. Start the application: 
+6. Start the application: 
     ```bash
     python manage.py runserver
     ```
