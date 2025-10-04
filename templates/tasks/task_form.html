@@ -8,23 +8,28 @@
        background:#fff3f3; border:1px solid #ffd6d6; color:#6b0000;
        padding:12px 14px; border-radius:12px; margin-bottom:12px;">
     <ul style="margin:0 0 0 16px;">
-      {% for field, errors in form.errors.items %}
-        {% for e in errors %}
-          <li><strong>{{ field|title }}</strong>: {{ e }}</li>
+      {# show any non-field errors first #}
+      {% for e in form.non_field_errors %}
+        <li>{{ e }}</li>
+      {% endfor %}
+      {# show field errors with human labels #}
+      {% for bf in form %}
+        {% for e in bf.errors %}
+          <li><strong>{{ bf.label }}</strong>: {{ e }}</li>
         {% endfor %}
       {% endfor %}
     </ul>
   </div>
 {% endif %}
 
-<form method="post" class="card" style="
+<form method="post" class="card form" style="
       background:#fff; border:1px solid #e5e5ea; border-radius:16px;
       box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06);
       padding:14px;">
   {% csrf_token %}
   {{ form.as_p }}
 
-  <div style="margin-top:12px;">
+  <div style="margin-top:12px; display:flex; gap:10px;">
     <button type="submit" class="btn btn-primary">{{ mode }}</button>
     <a href="{% url 'task_list' %}" class="btn btn-ghost">Cancel</a>
   </div>

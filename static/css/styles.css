@@ -50,7 +50,7 @@ footer {
 a { color:var(--primary); text-decoration:none; }
 a:hover { text-decoration:underline; }
 
-/* Toolbar */
+
 .toolbar {
   display:grid;
   grid-template-columns:1fr repeat(3,minmax(160px,200px)) auto auto;
@@ -95,7 +95,7 @@ a:hover { text-decoration:underline; }
 .toolbar button:active,
 .toolbar .btn:active { filter:brightness(.95); }
 
-/* Card Table */
+
 .card-table {
   width:100%;
   border-collapse:separate;
@@ -121,11 +121,11 @@ a:hover { text-decoration:underline; }
 }
 .card-table tbody tr:first-child td { border-top:none; }
 
-/* Task content */
+
 .title { font-weight:700; }
 .desc  { color:var(--muted); font-size:13px; margin-top:4px; }
 
-/* Priority Pills */
+
 .pill {
   display:inline-block;
   padding:4px 10px;
@@ -138,13 +138,11 @@ a:hover { text-decoration:underline; }
 .pill.med  { color:#ff9f0a; background:rgba(255,159,10,.12); border-color:#ffe2b8; }
 .pill.high { color:#ff453a; background:rgba(255,69,58,.12); border-color:#ffc9c6; }
 
-/* Actions */
+
 .actions a { margin-right:12px; }
 .actions .danger { color:var(--danger); }
 
-/* === Buttons === */
 
-/* Base button */
 .btn {
   appearance:none;
   border:none;
@@ -158,21 +156,21 @@ a:hover { text-decoration:underline; }
   text-align:center;
 }
 
-/* Blue primary button */
+
 button.primary,
 .btn-primary {
   background:#007aff;
   color:#fff;
 }
 
-/* Purple button */
+
 .btn-purple {
   background:#a21cd6;
   color:#fff;
 }
 .btn-purple:hover { background:#6d28d9; }
 
-/* Ghost button */
+
 button.ghost,
 .btn-ghost {
   background:#fff;
@@ -189,7 +187,6 @@ button.ghost:hover,
   box-shadow:0 0 0 4px rgba(0,0,0,.04);
 }
 
-/* Toggle (Done column) */
 .toggle {
   display:inline-flex;
   align-items:center;
@@ -208,14 +205,14 @@ button.ghost:hover,
 .toggle.done { color:#fff; background:#10b981; }
 .toggle.done:hover { background:#059669; }
 
-/* Completed state */
+
 tr.done { background:#f9fafb; }
 tr.done .title {
   text-decoration:line-through;
   color:var(--muted);
 }
 
-/* Completed badge */
+
 .badge-completed {
   display:inline-block;
   margin-top:4px;
@@ -226,5 +223,57 @@ tr.done .title {
   background:#d1fae5;
   border-radius:999px;
 }
-/* Hide default per-field error lists; we'll use the top summary box instead */
+
 ul.errorlist { display: none; }
+.form input[type="text"],
+.form input[type="date"],
+.form textarea,
+.form select {
+  border: 1px solid var(--border);
+  border-radius: 12px;  
+  padding: 10px 12px;
+  background: #fff;
+  outline: none;
+}
+.form input[type="text"]:focus,
+.form input[type="date"]:focus,
+.form textarea:focus,
+.form select:focus {
+  box-shadow: 0 0 0 4px rgba(0,122,255,.12);
+  border-color: #c7e0ff;
+}
+
+
+.form p { margin: 12px 0; }
+
+.form label {
+  display: block;          
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1f2937;
+}
+
+.form input[type="text"],
+.form input[type="date"],
+.form textarea,
+.form select {
+  width: 100%;             
+  border: 1px solid var(--border);
+  border-radius: 12px;      
+  padding: 10px 12px;
+  background: #fff;
+  outline: none;
+}
+
+.form textarea {
+  min-height: 180px;        
+  line-height: 1.45;
+}
+
+.form input[type="text"]:focus,
+.form input[type="date"]:focus,
+.form textarea:focus,
+.form select:focus {
+  box-shadow: 0 0 0 4px rgba(0,122,255,.12);
+  border-color: #c7e0ff;
+}
