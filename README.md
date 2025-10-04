@@ -50,10 +50,10 @@ To-Do-List Manager application for students and professionals that helps organiz
     Open: http://127.0.0.1:8000/ → redirects to /tasks/.
 
 ### Run Test 
-    ```bash
-    python manage.py test
+    
+ 1. ```bash
+    python manage.py migrate
     ```
-
 
 ## Database
 SQLite (default) 
