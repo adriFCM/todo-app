@@ -14,7 +14,7 @@ class TaskForm(forms.ModelForm):
             }
         ),
         error_messages={
-            'invalid': "Ivalid date format. Please use DD/MM/YYYY",
+            'invalid': "Invalid date format. Please use DD/MM/YYYY",
         },
     )
 

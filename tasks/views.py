@@ -24,7 +24,7 @@ def task_list(request):
     if priority in Task.Priority.values:
         tasks = tasks.filter(priority=priority)
 
-    # Whitelist sort fields (preserve optional leading "-")
+    
     allowed_fields = {"created_at", "due_date", "priority", "completed", "title"}
     raw = sort
     sign = "-" if sort.startswith("-") else ""
