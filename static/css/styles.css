@@ -226,3 +226,5 @@ tr.done .title {
   background:#d1fae5;
   border-radius:999px;
 }
+/* Hide default per-field error lists; we'll use the top summary box instead */
+ul.errorlist { display: none; }
