@@ -54,7 +54,7 @@ To-Do-List Manager application for students and professionals that helps organiz
 ### Run Test 
     
  1. ```bash
-    python manage.py migrate
+    python manage.py test
     ```
 
 ## Database
