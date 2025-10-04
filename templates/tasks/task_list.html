@@ -79,14 +79,13 @@
   {% for t in tasks %}
     <tr class="{% if t.completed %}done{% endif %}">
       <td>
-        <a class="toggle {% if t.completed %}done{% endif %}"
-        href="{% url 'task_toggle' t.pk %}">
-        {% if t.completed %}
-      ✓
-      {% else %}
-      ○
-      {% endif %}
-        </a>
+        <form method="post" action="{% url 'task_toggle' t.pk %}" style="display:inline">
+  {% csrf_token %}
+  <button type="submit" class="toggle {% if t.completed %}done{% endif %}">
+    {% if t.completed %}✓{% else %}○{% endif %}
+  </button>
+</form>
+
       </td>
 
       <td>
