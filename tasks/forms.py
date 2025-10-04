@@ -2,16 +2,19 @@ from django import forms
 from .models import Task
 
 class TaskForm(forms.ModelForm):
-    # Force DD/MM/YYYY parsing & display
     due_date = forms.DateField(
-        input_formats=['%d/%m/%Y'],          # parse as day/month/year
+        required=False,                    
+        input_formats=['%d/%m/%Y'],         
         widget=forms.DateInput(
-            format='%d/%m/%Y',               # render as day/month/year
-            attrs={'placeholder': 'DD/MM/YYYY'}
+            format='%d/%m/%Y',
+            attrs={
+                'placeholder': 'DD/MM/YYYY',
+                'inputmode': 'numeric',     
+                'autocomplete': 'off'
+            }
         ),
         error_messages={
-            'invalid': "Please use DD/MM/YYYY.",
-            'required': "Due date is required."
+            'invalid': "Ivalid date format. Please use DD/MM/YYYY",
         },
     )
 
