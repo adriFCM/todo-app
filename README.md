@@ -32,10 +32,12 @@ To-Do-List Manager application for students and professionals that helps organiz
     ```bash
     python -m venv venv
     ```
-    ```macOS/Linux
+    macOS/Linux
+    ```
     source venv/bin/activate
     ```
-    ```Windows (PowerShell)
+    Windows (PowerShell)
+    ```
     venv\Scripts\Activate
 3. Install packages
     ```bash
