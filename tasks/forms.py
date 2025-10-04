@@ -11,7 +11,7 @@ class TaskForm(forms.ModelForm):
     )
     due_date = forms.DateField(
         required=False,
-        input_formats=['%d/%m/%Y'],
+        input_formats=['%d/%m/%Y'],  
         widget=forms.DateInput(
             format='%d/%m/%Y',
             attrs={'placeholder': 'DD/MM/YYYY', 'inputmode': 'numeric', 'autocomplete': 'off'}
