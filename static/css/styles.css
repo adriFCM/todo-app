@@ -1,3 +1,6 @@
+/* ===========================
+   Design tokens (CSS variables)
+   =========================== */
 :root {
   --bg:#fbfbfd;
   --surface:#ffffff;
@@ -5,18 +8,20 @@
   --muted:#6e6e73;
   --border:#e5e5ea;
 
-  --primary:#007aff;  /* blue */
-  --danger:#ff3b30;
+  --primary:#007aff;  /* brand blue for links/buttons */
+  --danger:#ff3b30;   /* destructive actions */
 
   --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06);
-  --radius:16px;
-  --radius-sm:12px;
-  --pad:14px;
-  --gap:12px;
+  --radius:16px;      /* large rounding for cards */
+  --radius-sm:12px;   /* small rounding for inputs/buttons */
+  --pad:14px;         /* consistent inner padding */
+  --gap:12px;         /* consistent gaps in layouts */
 }
 
+/* Consistent sizing for all elements */
 * { box-sizing:border-box; }
 
+/* Base page styling (font, bg, antialiasing) */
 html,body {
   margin:0;
   padding:0;
@@ -27,33 +32,37 @@ html,body {
   -moz-osx-font-smoothing:grayscale;
 }
 
+/* Content width + horizontal padding */
 header,footer,main {
   max-width:980px;
   margin:0 auto;
   padding:0 20px;
 }
 
-header {
-  padding:28px 20px 10px;
-}
+/* Header spacing + title weight */
+header { padding:28px 20px 10px; }
 header h1 {
   margin:0;
   font-weight:700;
   letter-spacing:.2px;
 }
 
+/* Muted footer text */
 footer {
   padding:24px 20px 40px;
   color:var(--muted);
 }
 
+/* Links use brand blue; underline on hover only */
 a { color:var(--primary); text-decoration:none; }
 a:hover { text-decoration:underline; }
 
-
+/* ===========================
+   Toolbar (search + filters)
+   =========================== */
 .toolbar {
   display:grid;
-  grid-template-columns:1fr repeat(3,minmax(160px,200px)) auto auto;
+  grid-template-columns:1fr repeat(3,minmax(160px,200px)) auto auto; /* input, 3 selects, 2 buttons */
   gap:var(--gap);
   background:var(--surface);
   padding:var(--pad);
@@ -62,6 +71,8 @@ a:hover { text-decoration:underline; }
   box-shadow:var(--shadow);
   margin:16px 0 18px;
 }
+
+/* Inputs/selects/buttons share consistent visual style */
 .toolbar input,
 .toolbar select,
 .toolbar button,
@@ -73,11 +84,15 @@ a:hover { text-decoration:underline; }
   border-radius:var(--radius-sm);
   outline:none;
 }
+
+/* Focus ring: subtle blue glow + lighter border */
 .toolbar input:focus,
 .toolbar select:focus {
   box-shadow:0 0 0 4px rgba(0,122,255,.12);
   border-color:#c7e0ff;
 }
+
+/* Primary actions inside toolbar */
 .toolbar button,
 .toolbar .btn {
   background:var(--primary);
@@ -86,16 +101,17 @@ a:hover { text-decoration:underline; }
   font-weight:600;
   cursor:pointer;
 }
-.toolbar .btn {
-  display:inline-block;
-  text-align:center;
-}
+.toolbar .btn { display:inline-block; text-align:center; }
+
+/* Button hover/active feedback */
 .toolbar button:hover,
 .toolbar .btn:hover { filter:brightness(1.05); }
 .toolbar button:active,
 .toolbar .btn:active { filter:brightness(.95); }
 
-
+/* ===========================
+   Card-style table (list view)
+   =========================== */
 .card-table {
   width:100%;
   border-collapse:separate;
@@ -104,8 +120,9 @@ a:hover { text-decoration:underline; }
   border:1px solid var(--border);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  overflow:hidden;
+  overflow:hidden; /* round the header corners */
 }
+
 .card-table thead th {
   text-align:left;
   padding:12px 14px;
@@ -114,6 +131,7 @@ a:hover { text-decoration:underline; }
   background:linear-gradient(#fafafa,#f7f7f7);
   border-bottom:1px solid var(--border);
 }
+
 .card-table tbody td {
   padding:14px;
   border-top:1px solid var(--border);
@@ -121,28 +139,32 @@ a:hover { text-decoration:underline; }
 }
 .card-table tbody tr:first-child td { border-top:none; }
 
-
+/* Task text hierarchy */
 .title { font-weight:700; }
 .desc  { color:var(--muted); font-size:13px; margin-top:4px; }
 
-
+/* ===========================
+   Priority pills
+   =========================== */
 .pill {
   display:inline-block;
   padding:4px 10px;
-  border-radius:999px;
+  border-radius:999px;          /* full pill */
   font-size:12px;
   font-weight:700;
   border:1px solid transparent;
 }
 .pill.low  { color:#6ee95d; background:rgba(10, 255, 22, 0.1); border-color:#9ad891; }
-.pill.med  { color:#ff9f0a; background:rgba(255,159,10,.12); border-color:#ffe2b8; }
-.pill.high { color:#ff453a; background:rgba(255,69,58,.12); border-color:#ffc9c6; }
+.pill.med  { color:#ff9f0a; background:rgba(255,159,10,.12);   border-color:#ffe2b8; }
+.pill.high { color:#ff453a; background:rgba(255,69,58,.12);    border-color:#ffc9c6; }
 
-
+/* Row actions (Edit/Delete) */
 .actions a { margin-right:12px; }
 .actions .danger { color:var(--danger); }
 
-
+/* ===========================
+   Generic buttons & variants
+   =========================== */
 .btn {
   appearance:none;
   border:none;
@@ -156,21 +178,21 @@ a:hover { text-decoration:underline; }
   text-align:center;
 }
 
-
+/* Primary button (blue) */
 button.primary,
 .btn-primary {
   background:#007aff;
   color:#fff;
 }
 
-
+/* Secondary “brand” button (purple) */
 .btn-purple {
   background:#a21cd6;
   color:#fff;
 }
 .btn-purple:hover { background:#6d28d9; }
 
-
+/* Ghost button (bordered, neutral) */
 button.ghost,
 .btn-ghost {
   background:#fff;
@@ -187,6 +209,9 @@ button.ghost:hover,
   box-shadow:0 0 0 4px rgba(0,0,0,.04);
 }
 
+/* ===========================
+   Toggle (Done column button)
+   =========================== */
 .toggle {
   display:inline-flex;
   align-items:center;
@@ -202,17 +227,17 @@ button.ghost:hover,
   transition:all 0.2s ease;
 }
 .toggle:hover { background:#e5e7eb; }
-.toggle.done { color:#fff; background:#10b981; }
+.toggle.done { color:#fff; background:#10b981; }       /* completed state */
 .toggle.done:hover { background:#059669; }
 
-
+/* Completed rows: subtle bg + strike title */
 tr.done { background:#f9fafb; }
 tr.done .title {
   text-decoration:line-through;
   color:var(--muted);
 }
 
-
+/* Completed badge under description */
 .badge-completed {
   display:inline-block;
   margin-top:4px;
@@ -224,7 +249,14 @@ tr.done .title {
   border-radius:999px;
 }
 
+/* ===========================
+   Form styling
+   =========================== */
+
+/* Hide Django's default per-field error UL; we show a single top summary */
 ul.errorlist { display: none; }
+
+/* Field chrome (shared look) */
 .form input[type="text"],
 .form input[type="date"],
 .form textarea,
@@ -235,6 +267,8 @@ ul.errorlist { display: none; }
   background: #fff;
   outline: none;
 }
+
+/* Focus ring for form fields */
 .form input[type="text"]:focus,
 .form input[type="date"]:focus,
 .form textarea:focus,
@@ -243,33 +277,37 @@ ul.errorlist { display: none; }
   border-color: #c7e0ff;
 }
 
-
+/* Spacing between form rows (Django renders <p> wrappers) */
 .form p { margin: 12px 0; }
 
+/* Labels above fields */
 .form label {
-  display: block;          
+  display: block;
   font-weight: 600;
   margin-bottom: 6px;
   color: #1f2937;
 }
 
+/* Full-width fields (duplication below repeats this block—kept for parity) */
 .form input[type="text"],
 .form input[type="date"],
 .form textarea,
 .form select {
-  width: 100%;             
+  width: 100%;
   border: 1px solid var(--border);
-  border-radius: 12px;      
+  border-radius: 12px;
   padding: 10px 12px;
   background: #fff;
   outline: none;
 }
 
+/* Multi-line field defaults */
 .form textarea {
-  min-height: 180px;        
+  min-height: 180px;
   line-height: 1.45;
 }
 
+/* Focus ring (duplicated for clarity across blocks) */
 .form input[type="text"]:focus,
 .form input[type="date"]:focus,
 .form textarea:focus,
