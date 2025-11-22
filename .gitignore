@@ -16,3 +16,4 @@ db.sqlite3
 # VSCode / IDE
 .vscode/
 .idea/
+.coverage
