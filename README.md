@@ -185,7 +185,7 @@ Response (example):
 {
   "status": "ok",
   "database": "ok"
-}`
+}
 ```
 ### Prometheus metrics  
 
