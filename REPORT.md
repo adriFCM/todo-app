@@ -1,98 +1,81 @@
-# Todo App – DevOps & Quality Improvement Report
-
+# Todo App – DevOps & Quality Improvement Report 
 ## 1. Introduction
 
-This report summarises the work done on a Django-based Todo application as part of Individual Assignment 2. 
-The original project was a basic CRUD web app with minimal tests and no DevOps tooling. The main goals of this assignment were to:
+This report summarises the main improvements made to a Django-based Todo application for Individual Assignment 2. The original app was a simple CRUD project with minimal tests and no DevOps tooling.
 
-- Improve **code quality** and structure (SOLID, fewer code smells),
-- Add **automatic tests** with a coverage target,
-- Implement a **CI/CD pipeline**,
-- **Containerize** the app and deploy it to a cloud platform,
-- Add **monitoring and health checks**.
+The assignment required:
+- Better **code quality** (refactoring + SOLID),
+- **Automated tests** with ≥70% coverage and a coverage report,
+- A working **CI/CD pipeline**,
+- **Containerization** and deployment to a cloud platform,
+- Basic **monitoring** and health checks.
 
-The final solution delivers:
-
-- A cleaner Django codebase with project concerns separated from business logic,
-- A test suite run with `pytest` and `pytest-django` at ~90% coverage (≥ 70% enforced),
-- A GitHub Actions **CI/CD workflow** that builds and pushes Docker images to Azure Container Registry (ACR) and deploys only from `main`,
-- A Dockerized app running on **Azure Web App for Containers**,
-- A `/health/` endpoint and a `/metrics` endpoint, plus a Prometheus configuration file for monitoring.
+The final system now has a clean Django structure, a robust test suite (≈90% coverage), GitHub Actions CI/CD, Docker images pushed to Azure Container Registry (ACR), an Azure Web App for Containers, and `/health` + `/metrics` endpoints with a Prometheus config file.
 
 ---
 
 ## 2. Code Quality & Design Improvements
 
-### 2.1 Project structure and separation of concerns
+### 2.1 Project structure
 
-The project is now clearly divided into:
+The codebase is organised into:
 
-- `todo_project/` – framework-level and cross-cutting concerns:
-  - `settings.py` – configuration, including ALLOWED_HOSTS, installed apps, and monitoring settings.
-  - `urls.py` – top-level URL routing, including the health endpoint.
-  - `views.py` – project-wide utilities (currently the health check).
-- `tasks/` – domain logic for the todo app:
-  - `models.py` – `Task` model, with fields like `title`, `description`, `due_date`, `priority`, and `completed`.
-  - `forms.py` – encapsulates validation logic (e.g. date parsing).
-  - `views.py` – all task-specific actions (list, create, update, delete, toggle).
-  - `urls.py` – routes for the task views.
+- `todo_project/` – framework and infrastructure:
+  - `settings.py`: configuration (ALLOWED_HOSTS, installed apps, monitoring).
+  - `urls.py`: root URL routing, including `tasks` and `/health`/`/metrics`.
+  - `views.py`: project-wide utilities (health check).
+- `tasks/` – domain logic:
+  - `models.py`: `Task` model with title, description, due date, priority, completed.
+  - `forms.py`: input validation and parsing (e.g. date format).
+  - `views.py`: CRUD and list views, plus filtering/sorting and toggle-completed.
+  - `urls.py`: task routes, mounted at `/`.
 
-This separation follows the **Single Responsibility Principle (SRP)**:
+This separation keeps project configuration and business logic independent and easier to maintain.
 
-- The `tasks` app is responsible only for task-related behaviour.
-- `todo_project` handles configuration and infrastructure concerns such as routing, monitoring, and settings.
+### 2.2 SOLID in a Django context
 
-### 2.2 Applying SOLID principles in a Django context
-
-Within the natural constraints of Django, several changes were made to align with SOLID:
+Refactorings applied the spirit of SOLID without overcomplicating Django’s patterns:
 
 - **Single Responsibility**  
-  - Health checks were moved into `todo_project/views.py` instead of mixing them with task views.
-  - Forms now encapsulate input validation, so views do not manually parse and validate request data.
+  - Health logic moved to `todo_project/views.py`.  
+  - Validation handled in `forms.py` instead of ad‑hoc checks in views.
 
-- **Open/Closed principle**  
-  - Sorting and filtering options for the task list are controlled via whitelists, making it easy to add new fields without changing the core view logic.
-  - The priority choices (Low / Medium / High) are centralised, simplifying future extensions.
+- **Open/Closed**  
+  - Sorting and filtering are driven by whitelisted fields. Adding a new sortable field usually means just adding it to the whitelist, not rewriting the view.
+  - Priority values are defined centrally, so new priorities can be added without changing scattered magic strings.
 
 - **Dependency Inversion / Interface Segregation**  
-  - Views depend on Django forms and models instead of working directly with raw POST data and SQL.
-  - This makes the logic easier to test and less tightly coupled.
+  - Views depend on Django forms and models rather than raw request data or SQL, making it easier to swap validation or storage layers later if needed.
 
-These are modest refactorings, but they significantly improve readability, testability, and future extensibility.
+The result is shorter, more focused views, less duplication, and easier testing.
 
-### 2.3 Tests and coverage
+### 2.3 Testing strategy and coverage
 
-The testing strategy uses:
+Testing is based on `pytest` and `pytest-django` with `pytest-cov`:
 
-- **pytest** and **pytest-django** as the primary runner,
-- **pytest-cov** and `coverage.py` to measure coverage,
-- A dedicated test settings module (`todo_project.settings_test`) to avoid interfering with production/runtime settings.
+- `pytest.ini` points to `todo_project.settings_test` so tests use a dedicated configuration.
+- Dependencies for testing are listed in `requirements.txt`.
 
 Tests are organised as:
 
-- `tasks/tests.py` – unit and integration tests for the Task model, forms, and views.
-- `tests/test_sanity.py` – a minimal “does the test environment work” check.
-- `tests/test_healthy.py` – tests for the `/health/` endpoint.
+- `tasks/tests.py`  
+  - Model tests: default values, completion flag, ordering.
+  - Form tests: due date validation, required fields, priority handling.
+  - View tests: list/create/update/delete/toggle; correct redirects; only POST for state‑changing operations; filters and sorting combinations.
 
-The suite includes:
+- `tests/test_sanity.py`  
+  - Simple sanity check to verify that the test environment and Django setup are correct.
 
-- **Unit tests** for:
-  - Model defaults and behaviour (e.g. default priority, marking completed),
-  - Form validation (especially due date format and required fields).
+- `tests/test_healthy.py`  
+  - Checks that `/health/` returns HTTP 200 and the expected JSON keys.
 
-- **Integration tests** using Django’s test client for:
-  - Listing tasks, posting new tasks, updating, and deleting,
-  - Ensuring that state-changing operations use POST, not GET,
-  - Verifying sorting/filtering combinations,
-  - Verifying `/health/` returns the expected JSON.
+The CI and local runs use:
 
-Coverage is enforced as follows:
+```bash
+pytest
+```
 
-- `pytest` is configured to run with `--cov` options,
-- A minimum coverage of **70%** is required; otherwise the command fails,
-- A `coverage.xml` report is generated at the root of the repository.
-
-A typical run shows around **90% overall coverage** with all tests passing, comfortably meeting the assignment’s “≥ 70% coverage” requirement and providing a machine-readable coverage report as a test artefact.
+which runs tests with coverage and generates `coverage.xml`. Coverage is enforced at 70% minimum; the current suite reaches ~90% overall coverage, satisfying the assignment requirement and providing a machine‑readable report.
 
 ---
 
@@ -102,127 +85,78 @@ A typical run shows around **90% overall coverage** with all tests passing, comf
 
 The pipeline was designed to:
 
-- Automatically validate every change using tests and coverage,
-- Only deploy to the cloud when changes are merged into `main`,
-- Build and push Docker images in a reproducible way.
+- Run tests and coverage automatically on every change,
+- Prevent deployment if tests fail,
+- Build and publish Docker images,
+- Deploy only changes from the `main` branch.
 
 ### 3.2 GitHub Actions workflow
 
-All CI/CD logic lives in:
+The pipeline lives in `.github/workflows/ci.yml` and defines two jobs: `test` and `deploy`.
 
-```text
-.github/workflows/ci.yml
-```
+#### 3.2.1 `test` job (CI)
 
-The workflow defines two jobs: `test` and `deploy`.
+**Triggers**: `push` and `pull_request` on any branch.
 
-#### 3.2.1 CI: `test` job
+Main steps:
 
-**Triggers:**
+1. Check out the code (`actions/checkout`).
+2. Set up Python 3.10 (`actions/setup-python`).
+3. Install dependencies: `pip install -r requirements.txt`.
+4. Run `pytest` (with coverage and Django integration).
 
-```yaml
-on:
-  push:
-  pull_request:
-```
+If tests or coverage fail, the job fails and pull requests show a red status.
 
-The `test` job runs for any branch and on every pull request. Its main steps are:
+#### 3.2.2 `deploy` job (CD)
 
-1. **Checkout repository**  
-   Using `actions/checkout` to get the source code.
+The `deploy` job:
 
-2. **Set up Python 3.10**  
-   With `actions/setup-python`.
-
-3. **Install dependencies**  
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run tests with coverage**  
-
-   ```bash
-   pytest
-   ```
-
-This ensures every change is automatically validated. If tests fail or coverage falls below 70%, the job fails and any pull request shows a red status.
-
-#### 3.2.2 CD: `deploy` job
-
-The `deploy` job is dependent on `test`:
-
-```yaml
-needs: test
-if: github.ref == 'refs/heads/main'
-```
-
-It only runs when:
-
-- the `test` job has succeeded, and  
-- the commit is on the `main` branch.
+- Depends on `test` (`needs: test`),
+- Runs only on `main` (`if: github.ref == 'refs/heads/main'`).
 
 Steps:
 
-1. **Login to Azure Container Registry (ACR)**  
-   Using secrets stored in GitHub:
-
-   - `ACR_LOGIN_SERVER` (e.g. `todoacradri.azurecr.io`)
-   - `ACR_USERNAME`
-   - `ACR_PASSWORD`
-
-   A `docker login` command is executed with these credentials.
-
-2. **Build the Docker image**  
-
+1. **Login to ACR** using GitHub secrets (`ACR_LOGIN_SERVER`, `ACR_USERNAME`, `ACR_PASSWORD`).
+2. **Build Docker image** and tag it with both the commit SHA and `latest`:
    ```bash
    docker build -t $ACR_LOGIN_SERVER/todo-app:${GITHUB_SHA} .
    docker tag $ACR_LOGIN_SERVER/todo-app:${GITHUB_SHA} \
               $ACR_LOGIN_SERVER/todo-app:latest
    ```
+3. **Push image** to ACR with both tags.
 
-3. **Push image to ACR**  
+Only after a successful test run on `main` do new images get pushed, which keeps deployments safe and traceable.
 
-   ```bash
-   docker push $ACR_LOGIN_SERVER/todo-app:${GITHUB_SHA}
-   docker push $ACR_LOGIN_SERVER/todo-app:latest
-   ```
+### 3.3 Branching strategy
 
-The use of both a unique SHA tag and the `latest` tag allows traceability of specific builds while letting the Azure Web App simply track `latest`.
+Work was done on a feature branch `feat/devops-a2`:
 
-### 3.3 Branching and merging strategy
+1. Implement changes on the feature branch.
+2. Push and open a Pull Request into `main`.
+3. Let CI run (`test` job).
+4. Merge only after green checks.
+5. The merge into `main` triggers `deploy` and updates the running app.
 
-Development work was carried out on a feature branch (`feat/devops-a2`) to avoid breaking `main`. The workflow was:
-
-1. Implement changes and run tests locally,
-2. Push to the feature branch,
-3. Open a Pull Request into `main`,
-4. Let the `test` job run for the PR,
-5. Merge only after CI is green.
-
-After merging, the `deploy` job runs for `main` and pushes the new Docker image, which the Azure Web App then uses.
-
-This keeps `main` in a deployable state and links each deployment to a specific commit history and CI run.
+This keeps `main` always in a deployable state and links every deployment to a PR and CI run.
 
 ---
 
-## 4. Containerization and Cloud Deployment
+## 4. Containerization & Azure Deployment
 
 ### 4.1 Dockerfile
 
-The application is containerized using a `Dockerfile` in the project root. In simplified form, it:
+The app is packaged using a root‑level `Dockerfile`. In summary, it:
 
 - Uses an official Python base image,
-- Copies the application code and `requirements.txt`,
-- Installs Python dependencies,
-- Runs database migrations on container startup,
-- Starts Django via:
-
+- Copies application code and `requirements.txt`,
+- Installs dependencies,
+- Runs migrations on start,
+- Launches Django with:
   ```bash
   python manage.py runserver 0.0.0.0:8000
   ```
 
-For local testing, the image can be built and run with:
+Local usage:
 
 ```bash
 docker build -t todo-app:dev .
@@ -231,83 +165,64 @@ docker run --rm -p 8000:8000 todo-app:dev
 
 ### 4.2 Azure Container Registry and Web App
 
-The deployment target is **Azure Web App for Containers**. The main pieces are:
+Deployment targets Azure:
 
 1. **Azure Container Registry (ACR)**  
-   - Private registry to store Docker images,
-   - Logs pushes from GitHub Actions (tags: commit SHA and `latest`),
-   - Admin credentials used by the GitHub workflow.
+   - Stores private images `todo-app:<sha>` and `todo-app:latest`.  
+   - Receives pushes from the GitHub Actions `deploy` job.
 
-2. **Azure Web App**  
-   - Configured as a Linux Web App with “Container” publish,
-   - Container source is ACR,
-   - Image name `todo-app`, tag `latest`,
-   - When `latest` is updated by CI/CD, the Web App picks up the new version (after restart).
+2. **Azure Web App for Containers**  
+   - Linux Web App configured to use ACR as the source.
+   - Image: `todo-app`, tag: `latest`.  
+   - When the GitHub workflow pushes a new `latest`, the Web App can be restarted to run the newest version.
 
-During setup, we initially tried Azure’s Managed Identity for pulling from ACR but, due to permission constraints in the shared subscription, we switched to using ACR admin credentials, which is simpler and reliable for this assignment.
+Due to limited permissions in the shared subscription, configuration uses **ACR admin credentials** instead of Managed Identity, which keeps the setup simple and reliable for this assignment.
 
-### 4.3 Django host configuration
+### 4.3 ALLOWED_HOSTS fix
 
-When the container first ran on Azure, Django raised a `DisallowedHost` error because the `ALLOWED_HOSTS` setting did not include the Azure hostname. The solution was to expand `ALLOWED_HOSTS` in `settings.py` to include:
+When the container first ran on Azure, Django raised a `DisallowedHost` error because the Azure hostname was not in `ALLOWED_HOSTS`. The fix was to update `settings.py`:
 
-- `127.0.0.1` and `localhost` for local development,
-- `.azurewebsites.net` to accept the Azure app’s domain (and any subdomain under it).
+```python
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    ".azurewebsites.net",
+]
+```
 
-After committing this change and letting the pipeline deploy, the app became accessible in the browser via its Azure URL.
+After committing and merging this change, the pipeline deployed a new image and the app became accessible via its Azure URL.
 
 ---
 
-## 5. Monitoring and Health Checks
+## 5. Monitoring & Health Checks
 
-### 5.1 Health endpoint (`/health/`)
+### 5.1 `/health` endpoint
 
-A simple but important addition is a dedicated health endpoint that can be used by monitoring tools or by a load balancer.
+A simple health check endpoint provides quick status:
 
-Implementation:
-
-- In `todo_project/views.py`, a `health` view checks:
-  - That the app can connect to the default database, and
-  - Returns a JSON response with two fields: `status` and `database`.
-
-- In `todo_project/urls.py`, this view is exposed as:
-
+- Implemented in `todo_project/views.py`.
+- Checks database connectivity and returns JSON:
+  ```json
+  { "status": "ok", "database": "ok" }
+  ```
+  or `"degraded"` if the DB check fails.
+- Exposed in `todo_project/urls.py` as:
   ```python
   path("health/", health, name="health")
   ```
 
-Typical response:
+`tests/test_healthy.py` verifies that the endpoint responds with HTTP 200 and the expected JSON structure.
 
-```json
-{
-  "status": "ok",
-  "database": "ok"
-}
-```
+### 5.2 `/metrics` endpoint and Prometheus
 
-If the database connection fails, `database` becomes `"error"` and overall `status` becomes `"degraded"`.
+For metrics, the project uses `django-prometheus`:
 
-Tests for this endpoint live in `tests/test_healthy.py`, ensuring that `/health/` always returns the expected structure and HTTP status.
+- Added to `INSTALLED_APPS` and `MIDDLEWARE`.
+- `django_prometheus.urls` included in `todo_project/urls.py`.
 
-### 5.2 Metrics endpoint (`/metrics`) via `django-prometheus`
+This exposes `/metrics`, which outputs Prometheus‑compatible metrics such as request counts and latencies.
 
-For more advanced monitoring, the app exposes metrics in the **Prometheus** format. This is achieved using the `django-prometheus` package:
-
-- Added to `requirements.txt` and installed,
-- Registered in `INSTALLED_APPS`,
-- Prometheus middleware added to `MIDDLEWARE` to instrument requests,
-- `django_prometheus.urls` included in `todo_project/urls.py`, which exposes `/metrics`.
-
-Visiting `/metrics` shows various metrics such as request counts, latencies, and error counts in the standard Prometheus exposition format.
-
-### 5.3 Prometheus configuration file
-
-To make the monitoring setup concrete, a Prometheus configuration file is included in the repository as:
-
-```text
-monitoring/prometheus.yml
-```
-
-Example configuration:
+A sample Prometheus configuration is included in `monitoring/prometheus.yml`:
 
 ```yaml
 global:
@@ -320,17 +235,18 @@ scrape_configs:
       - targets: ["localhost:8000"]
 ```
 
-This file shows how Prometheus would be set up (locally) to scrape metrics from the app. Combined with `/metrics`, it satisfies the assignment requirement for a “monitoring configuration or dashboard file”.
+This file demonstrates how Prometheus would scrape the app in a local or lab environment, fulfilling the “monitoring configuration or dashboard file” requirement.
 
 ---
 
 ## 6. Conclusion
 
-Starting from a simple Django Todo application, the project has been extended into a **full DevOps-ready service**:
+The original Todo app has been transformed into a small but complete DevOps pipeline:
 
-- The codebase has been cleaned up with a clear separation between project configuration and business logic. Small refactorings help align with SOLID principles and make the app easier to maintain.
-- A proper **testing strategy** using `pytest` and `pytest-django` achieves around 90% coverage, with a strict 70% minimum enforced by the pipeline.
-- A **CI/CD pipeline** built on GitHub Actions automatically runs tests for every change and deploys only from `main`, building Docker images and pushing them to Azure Container Registry.
-- The application is **containerized** and deployed to **Azure Web App for Containers**, which tracks the `latest` image from ACR.
-- **Monitoring** is addressed via a `/health/` endpoint and a Prometheus-compatible `/metrics` endpoint, with a sample `prometheus.yml` file included.
+- Code is structured with clearer responsibilities and fewer smells, applying SOLID ideas where appropriate.
+- Automated tests with `pytest` and `pytest-django` reach around 90% coverage, with a strict 70% minimum enforced by CI and a `coverage.xml` report.
+- A GitHub Actions pipeline runs tests on every change and deploys only on `main`, building and pushing Docker images to Azure Container Registry.
+- The app is containerized and deployed on Azure Web App for Containers, using the `latest` image tag from ACR.
+- Monitoring is covered via `/health` for quick checks and `/metrics` + `prometheus.yml` for metrics and observability.
 
+Together with the updated README and this report, the repository clearly documents the improvements, the CI/CD pipeline, and the monitoring setup required for the assignment.
