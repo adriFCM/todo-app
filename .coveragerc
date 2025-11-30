@@ -1,0 +1,15 @@
+[run]
+branch = true
+source =
+    tasks
+omit =
+    */migrations/*
+    */__init__.py
+    */tests/*
+    */.venv/*
+    */venv/*
+    manage.py
+
+[report]
+show_missing = true
+skip_covered = true

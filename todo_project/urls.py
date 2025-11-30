@@ -1,12 +1,12 @@
+# todo_project/urls.py
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import RedirectView   
 
 urlpatterns = [
-    path('admin/', admin.site.urls), # not used in this project, kept for possible future inprovements
-    path('tasks/', include('tasks.urls')),     
-    path('', RedirectView.as_view(               
-        pattern_name='task_list',                
-        permanent=False
-    )),
+    path('', include('tasks.urls')),
 ]
+
+# Only add the admin URL when the admin app is installed
+if 'django.contrib.admin' in settings.INSTALLED_APPS:
+    urlpatterns += [path('admin/', admin.site.urls)]
