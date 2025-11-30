@@ -2,8 +2,7 @@
 
 ## 1. Introduction
 
-This report summarises the work done on a Django-based Todo application as part of Individual Assignment 2.  
-
+This report summarises the work done on a Django-based Todo application as part of Individual Assignment 2. 
 The original project was a basic CRUD web app with minimal tests and no DevOps tooling. The main goals of this assignment were to:
 
 - Improve **code quality** and structure (SOLID, fewer code smells),
@@ -335,4 +334,3 @@ Starting from a simple Django Todo application, the project has been extended in
 - The application is **containerized** and deployed to **Azure Web App for Containers**, which tracks the `latest` image from ACR.
 - **Monitoring** is addressed via a `/health/` endpoint and a Prometheus-compatible `/metrics` endpoint, with a sample `prometheus.yml` file included.
 
-Together with the updated README and this report, the project now provides a complete story: from local development and testing to automated deployment and basic monitoring, meeting—and in several areas exceeding—the assignment’s requirements.
